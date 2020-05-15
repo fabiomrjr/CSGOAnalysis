@@ -30,12 +30,13 @@ def main(argv):
     if argv[0] == "analysis":
         team1 = argv[1] if "-" not in argv[1] else argv[1].replace("-", " ")
         team2 = argv[2] if "-" not in argv[2] else argv[2].replace("-", " ")
-        Analysis().getAnalysis(team1, team2, argv[3].split(";"))
+        Analysis().get_analysis(team1, team2, argv[3].split(";"))
     elif argv[0] == "updateTeam":
         team1 = argv[1] if "-" not in argv[1] else argv[1].replace("-", " ")
         BuildTeam().fullUpdateByTeam(team1, int(argv[2]))
     elif argv[0] == "fullUpdateTeams":
         BuildTeam().fullUpdateAllTeams(int(argv[1]))
+
 
 if __name__ == "__main__":
     teste()

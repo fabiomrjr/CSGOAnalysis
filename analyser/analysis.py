@@ -7,36 +7,30 @@ from analyser.team_indicators import TeamIndicators
 from dao.team_dao import TeamDAO
 from dao.game_dao import GameDAO
 
-class Analysis():
+class Analysis:
     def __init__(self):
         pass
 
-    def getAnalysis(self, team1Name, team2Name, maps):
+    def get_analysis(self, team1_name, team2_name, maps):
 
-        team1 = TeamDAO().getTeamByLikeName(team1Name)
-        team2 = TeamDAO().getTeamByLikeName(team2Name)
+        team1 = TeamDAO().getTeamByLikeName(team1_name)
+        team2 = TeamDAO().getTeamByLikeName(team2_name)
 
-        team1Games = GameDAO().listTeamMapsGames(None, team1Name)
-        team2Games = GameDAO().listTeamMapsGames(None, team2Name)
+        team1_games = GameDAO().listTeamMapsGames(None, team1_name)
+        team2_games = GameDAO().listTeamMapsGames(None, team2_name)
 
-        confidenceTeam1 = TeamIndicators().get_team_confidence(team1.id_team, team1Games)
-        confidenceTeam2 = TeamIndicators().get_team_confidence(team2.id_team, team2Games)
+        confidenceTeam1 = TeamIndicators().get_team_confidence(team1.id_team, team1_games)
+        confidenceTeam2 = TeamIndicators().get_team_confidence(team2.id_team, team2_games)
 
-        winLostByRankAndMap1 = TeamIndicators().win_lost_percentage_by_rank_window(team1Name, team1Games)
-        winLostByRankAndMap2 = TeamIndicators().win_lost_percentage_by_rank_window(team2Name, team2Games)
+        winLostByRankAndMap1 = TeamIndicators().win_lost_percentage_by_rank_window(team1_name, team1_games)
+        winLostByRankAndMap2 = TeamIndicators().win_lost_percentage_by_rank_window(team2_name, team2_games)
 
-        winLostCountGameByRank1 = TeamIndicators().win_lost_count_game_by_rank_window(team1Name, team1Games)
-        winLostCountGameByRank2 = TeamIndicators().win_lost_count_game_by_rank_window(team2Name, team2Games)
+        winLostCountGameByRank1 = TeamIndicators().win_lost_count_game_by_rank_window(team1_name, team1_games)
+        winLostCountGameByRank2 = TeamIndicators().win_lost_count_game_by_rank_window(team2_name, team2_games)
 
-        team1Info = {"Team": team1Name,
-                     "Rank": team1.actual_rank,
-                     "Confidence": 0.0,
-                     "WinPercentageOppRank": {},
+        team1Info = {"Team": team1_name, "Rank": team1.actual_rank, "Confidence": 0.0, "WinPercentageOppRank": {},
                      "MapsCountOppRank": {}}
-        team2Info = {"Team": team2Name,
-                     "Rank": team2.actual_rank,
-                     "Confidence": 0.0,
-                     "WinPercentageOppRank": {},
+        team2Info = {"Team": team2_name, "Rank": team2.actual_rank, "Confidence": 0.0, "WinPercentageOppRank": {},
                      "MapsCountOppRank": {}}
 
         team1Info["Confidence"] = (confidenceTeam1.get(maps[0])["Confidence"]) if confidenceTeam1.get(maps[0]) != None else 0.0
