@@ -42,7 +42,6 @@ class Game(base):
     def __init__(self):
         pass
 
-
     def __init__(self, championship_id, team1_id, team2_id, startDateTime, team1_score, team2_score, winner_team_id, best_of, team1_picks_maps, team2_picks_maps,
                  team1_removed_maps, team2_removed_maps, team1_rank, team2_rank):
         self.id_championship = championship_id
@@ -60,14 +59,14 @@ class Game(base):
         self.team1_rank = team1_rank
         self.team2_rank = team2_rank
 
-    def update(self, championship_id, team1_id, team2_id, startDateTime, team1_score, team2_score, winner_team_id, best_of, team1_picks_maps, team2_picks_maps,
+    def update(self, championship_id, team1_id, team2_id, startdateTime, team1_score, team2_score, winner_team_id, best_of, team1_picks_maps, team2_picks_maps,
                team1_removed_maps, team2_removed_maps, team1_rank, team2_rank):
         self.id_championship = championship_id
         self.id_team1 = team1_id
         self.id_team2 = team2_id
         self.team1_score = team1_score
         self.team2_score = team2_score
-        self.date = startDateTime
+        self.date = startdateTime
         self.id_winner_team = winner_team_id
         self.best_of = best_of
         self.team1_picks_maps = team1_picks_maps

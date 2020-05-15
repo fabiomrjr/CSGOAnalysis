@@ -3,7 +3,7 @@ from db import db
 import requests
 from bs4 import BeautifulSoup, Comment
 from datetime import datetime as dt
-from analyser.teamPickMapsConfidence import TeamPickMapsConfidence
+from analyser.team_indicators import TeamPickMapsConfidence
 from dao.team_dao import TeamDAO
 from dao.game_dao import GameDAO
 
@@ -78,14 +78,14 @@ class Analysis():
             return {"2Maps": Maps2, "3Maps": Maps3}
 
     def getAnalysis(self, team1, team2, maps):
-        confidenceTeam1 = TeamPickMapsConfidence().getTeamConfidence(team1)
-        confidenceTeam2 = TeamPickMapsConfidence().getTeamConfidence(team2)
+        confidenceTeam1 = TeamPickMapsConfidence().get_team_confidence(team1)
+        confidenceTeam2 = TeamPickMapsConfidence().get_team_confidence(team2)
 
-        winLostByRankAndMap1 = TeamPickMapsConfidence().winLostPercentagemPerRankWindow(team1)
-        winLostByRankAndMap2 = TeamPickMapsConfidence().winLostPercentagemPerRankWindow(team2)
+        winLostByRankAndMap1 = TeamPickMapsConfidence().win_lost_percentage_by_rank_window(team1)
+        winLostByRankAndMap2 = TeamPickMapsConfidence().win_lost_percentage_by_rank_window(team2)
 
-        winLostCountGameByRank1 = TeamPickMapsConfidence().winLostCountGamePerRankWindow(team1)
-        winLostCountGameByRank2 = TeamPickMapsConfidence().winLostCountGamePerRankWindow(team2)
+        winLostCountGameByRank1 = TeamPickMapsConfidence().win_lost_count_game_by_rank_window(team1)
+        winLostCountGameByRank2 = TeamPickMapsConfidence().win_lost_count_game_by_rank_window(team2)
 
         team1Object = TeamDAO().getTeamByLikeName(team1)
         team2Object = TeamDAO().getTeamByLikeName(team2)

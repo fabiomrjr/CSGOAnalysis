@@ -2,19 +2,20 @@ import pandas as pd
 from dao.game_dao import GameDAO
 from dao.player_map_stats_dao import PlayerMapStatsDAO
 
+
 class BuildDataSet():
     def __init__(self):
         pass
 
-    def getPickConfidence(self, lastGames, team_id):
+    def get_pick_confidence(self, last_games, team_id):
         d = {}
         wins = 0
         picks = 0
-        for game in lastGames:
+        for game in last_games:
             if game.id_team1 == team_id:
                 for map in game.maps:
                     if map.map_name == game.team1_picks_maps:
-                        if d.get(map.map_name) == None:
+                        if d.get(map.map_name) is None:
                             d2 = {map.map_name: {"Pick": 1, "Win": 0, "Confidence": 0.0}}
                             if map.team1_total_rounds > map.team2_total_rounds:
                                 d2[map.map_name]["Win"] = 1
@@ -28,7 +29,7 @@ class BuildDataSet():
             elif game.id_team2 == team_id:
                 for map in game.maps:
                     if map.map_name == game.team2_picks_maps:
-                        if d.get(map.map_name) == None:
+                        if d.get(map.map_name) is None:
                             d2 = {map.map_name: {"Pick": 1, "Win": 0, "Confidence": 0.0}}
                             if map.team2_total_rounds > map.team1_total_rounds:
                                 d2[map.map_name]["Win"] = 1
@@ -45,10 +46,10 @@ class BuildDataSet():
 
         return 100 * wins / picks
 
-    def getWinPercentage(self, lastGames, team_id):
+    def get_win_percentage(self, last_games, team_id):
         wins = 0
         lost = 0
-        for game in lastGames:
+        for game in last_games:
             if game.id_team1 == team_id:
                 for map in game.maps:
                     if map.team1_total_rounds > map.team2_total_rounds:
@@ -96,30 +97,50 @@ class BuildDataSet():
         return sumPlusMinos
 
     def getDataSet(self):
-        df = pd.DataFrame(columns=['Team1Confidence', 'Team1WinPercentage', 'Team1Rank', 'Team1AverageOppRank', 'Team1PlayersPlusMinos', 'Team1RoundsPlusMinos',
-                                   'Team2Confidence', 'Team2WinPercentage', 'Team2Rank', 'Team2AverageOppRank', 'Team2PlayersPlusMinos', 'Team2RoundsPlusMinos', 'Team1Winner'])
+        df = pd.DataFrame(columns=['Team1Confidence', 'Team1WinPercentage', 'Team1Rank', 'Team1AverageOppRank',
+                                   'Team1PlayersPlusMinos', 'Team1RoundsPlusMinos',
+                                   'Team2Confidence', 'Team2WinPercentage', 'Team2Rank', 'Team2AverageOppRank',
+                                   'Team2PlayersPlusMinos', 'Team2RoundsPlusMinos', 'Team1Winner'])
 
         df = pd.DataFrame(columns=['Map1', 'Map2', 'Map3', 'Team1Rank', 'Team2Rank',
-                                   'Team1WinPercentageMirage', 'Team1WinPercentageDust2', 'Team1WinPercentageNuke', 'Team1WinPercentageOverpass', 'Team1WinPercentageInferno',
+                                   'Team1WinPercentageMirage', 'Team1WinPercentageDust2', 'Team1WinPercentageNuke',
+                                   'Team1WinPercentageOverpass', 'Team1WinPercentageInferno',
                                    'Team1WinPercentageVertigo', 'Team1WinPercentageTrain', 'Team1WinPercentageCache',
-                                   'Team2WinPercentageMirage', 'Team2WinPercentageDust2', 'Team2WinPercentageNuke', 'Team2WinPercentageOverpass', 'Team2WinPercentageInferno',
+                                   'Team2WinPercentageMirage', 'Team2WinPercentageDust2', 'Team2WinPercentageNuke',
+                                   'Team2WinPercentageOverpass', 'Team2WinPercentageInferno',
                                    'Team2WinPercentageVertigo', 'Team2WinPercentageTrain', 'Team2WinPercentageCache',
-                                   'Team1ConfidencePickMirage', 'Team1ConfidencePickDust2', 'Team1ConfidencePickNuke', 'Team1ConfidencePickOverpass', 'Team1ConfidencePickInferno',
+                                   'Team1ConfidencePickMirage', 'Team1ConfidencePickDust2', 'Team1ConfidencePickNuke',
+                                   'Team1ConfidencePickOverpass', 'Team1ConfidencePickInferno',
                                    'Team1ConfidencePickVertigo', 'Team1ConfidencePickTrain', 'Team1ConfidencePickCache',
-                                   'Team2ConfidencePickMirage', 'Team2ConfidencePickDust2', 'Team2ConfidencePickNuke', 'Team2ConfidencePickOverpass', 'Team2ConfidencePickInferno',
+                                   'Team2ConfidencePickMirage', 'Team2ConfidencePickDust2', 'Team2ConfidencePickNuke',
+                                   'Team2ConfidencePickOverpass', 'Team2ConfidencePickInferno',
                                    'Team2ConfidencePickVertigo', 'Team2ConfidencePickTrain', 'Team2ConfidencePickCache',
-                                   'Team1AverageOppRankMirage', 'Team1AverageOppRankDust2', 'Team1AverageOppRankNuke', 'Team1AverageOppRankOverpass', 'Team1AverageOppRankInferno',
+                                   'Team1AverageOppRankMirage', 'Team1AverageOppRankDust2', 'Team1AverageOppRankNuke',
+                                   'Team1AverageOppRankOverpass', 'Team1AverageOppRankInferno',
                                    'Team1AverageOppRankVertigo', 'Team1AverageOppRankTrain', 'Team1AverageOppRankCache',
-                                   'Team2AverageOppRankMirage', 'Team2AverageOppRankDust2', 'Team2AverageOppRankNuke', 'Team2AverageOppRankOverpass', 'Team2AverageOppRankInferno',
+                                   'Team2AverageOppRankMirage', 'Team2AverageOppRankDust2', 'Team2AverageOppRankNuke',
+                                   'Team2AverageOppRankOverpass', 'Team2AverageOppRankInferno',
                                    'Team2AverageOppRankVertigo', 'Team2AverageOppRankTrain', 'Team2AverageOppRankCache',
-                                   'Team1PlayersPlusMinosMirage', 'Team1PlayersPlusMinosDust2', 'Team1PlayersPlusMinosNuke', 'Team1PlayersPlusMinosOverpass', 'Team1PlayersPlusMinosInferno',
-                                   'Team1PlayersPlusMinosVertigo', 'Team1PlayersPlusMinosTrain', 'Team1PlayersPlusMinosCache',
-                                   'Team2PlayersPlusMinosMirage', 'Team2PlayersPlusMinosDust2', 'Team2PlayersPlusMinosNuke', 'Team2PlayersPlusMinosOverpass', 'Team2PlayersPlusMinosInferno',
-                                   'Team2PlayersPlusMinosVertigo', 'Team2PlayersPlusMinosTrain', 'Team2PlayersPlusMinosCache',
-                                   'Team1RoundsPlusMinosMirage', 'Team1RoundsPlusMinosDust2', 'Team1RoundsPlusMinosNuke', 'Team1RoundsPlusMinosOverpass', 'Team1RoundsPlusMinosInferno',
-                                   'Team1RoundsPlusMinosVertigo', 'Team1RoundsPlusMinosTrain', 'Team1RoundsPlusMinosCache',
-                                   'Team2RoundsPlusMinosMirage', 'Team2RoundsPlusMinosDust2', 'Team2RoundsPlusMinosNuke', 'Team2RoundsPlusMinosOverpass', 'Team2RoundsPlusMinosInferno',
-                                   'Team2RoundsPlusMinosVertigo', 'Team2RoundsPlusMinosTrain', 'Team2RoundsPlusMinosCache'
+                                   'Team1PlayersPlusMinosMirage', 'Team1PlayersPlusMinosDust2',
+                                   'Team1PlayersPlusMinosNuke', 'Team1PlayersPlusMinosOverpass',
+                                   'Team1PlayersPlusMinosInferno',
+                                   'Team1PlayersPlusMinosVertigo', 'Team1PlayersPlusMinosTrain',
+                                   'Team1PlayersPlusMinosCache',
+                                   'Team2PlayersPlusMinosMirage', 'Team2PlayersPlusMinosDust2',
+                                   'Team2PlayersPlusMinosNuke', 'Team2PlayersPlusMinosOverpass',
+                                   'Team2PlayersPlusMinosInferno',
+                                   'Team2PlayersPlusMinosVertigo', 'Team2PlayersPlusMinosTrain',
+                                   'Team2PlayersPlusMinosCache',
+                                   'Team1RoundsPlusMinosMirage', 'Team1RoundsPlusMinosDust2',
+                                   'Team1RoundsPlusMinosNuke', 'Team1RoundsPlusMinosOverpass',
+                                   'Team1RoundsPlusMinosInferno',
+                                   'Team1RoundsPlusMinosVertigo', 'Team1RoundsPlusMinosTrain',
+                                   'Team1RoundsPlusMinosCache',
+                                   'Team2RoundsPlusMinosMirage', 'Team2RoundsPlusMinosDust2',
+                                   'Team2RoundsPlusMinosNuke', 'Team2RoundsPlusMinosOverpass',
+                                   'Team2RoundsPlusMinosInferno',
+                                   'Team2RoundsPlusMinosVertigo', 'Team2RoundsPlusMinosTrain',
+                                   'Team2RoundsPlusMinosCache'
                                    ])
         games = GameDAO().listLastGames()
         counter = 0
@@ -133,11 +154,11 @@ class BuildDataSet():
             if len(team1LastGames) < 10 or len(team2LastGames) < 10:
                 continue
 
-            team1Confidence = self.getPickConfidence(team1LastGames, game.id_team1)
-            team2Confidence = self.getPickConfidence(team2LastGames, game.id_team2)
+            team1Confidence = self.get_pick_confidence(team1LastGames, game.id_team1)
+            team2Confidence = self.get_pick_confidence(team2LastGames, game.id_team2)
 
-            winPercentageTeam1 = self.getWinPercentage(team1LastGames, game.id_team1)
-            winPercentageTeam2 = self.getWinPercentage(team2LastGames, game.id_team2)
+            winPercentageTeam1 = self.get_win_percentage(team1LastGames, game.id_team1)
+            winPercentageTeam2 = self.get_win_percentage(team2LastGames, game.id_team2)
 
             game.team1_rank
             game.team2_rank
@@ -171,7 +192,7 @@ class BuildDataSet():
             counter = counter + 1
         print(df)
 
-    def decisionTreeML(self):
+    def decision_tree_machine_learning(self):
         # Decision Tree Classification
 
         # Importing the libraries

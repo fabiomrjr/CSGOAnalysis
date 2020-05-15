@@ -4,7 +4,7 @@ class TeamPickMapsConfidence():
     def __init(self):
         pass
 
-    def getTeamConfidence(self, team1):
+    def get_team_confidence(self, team1):
         #df = pd.DataFrame(columns=['Map', 'Pick', 'Win'])
         d = {}
         returned = GameDAO().listTeamMapsGames(team1)
@@ -12,7 +12,7 @@ class TeamPickMapsConfidence():
             if game.team1.name == team1:
                 for map in game.maps:
                     if map.map_name == game.team1_picks_maps:
-                        if d.get(map.map_name) == None:
+                        if d.get(map.map_name) is None:
                             d2 = {map.map_name: {"Pick":1, "Win":0, "Confidence": 0.0}}
                             if map.team1_total_rounds > map.team2_total_rounds:
                                 d2[map.map_name]["Win"] = 1
@@ -26,7 +26,7 @@ class TeamPickMapsConfidence():
             elif game.team2.name == team1:
                 for map in game.maps:
                     if map.map_name == game.team2_picks_maps:
-                        if d.get(map.map_name) == None:
+                        if d.get(map.map_name) is None:
                             d2 = {map.map_name: {"Pick": 1, "Win": 0, "Confidence": 0.0}}
                             if map.team2_total_rounds > map.team1_total_rounds:
                                 d2[map.map_name]["Win"] = 1
@@ -42,7 +42,7 @@ class TeamPickMapsConfidence():
 
         return d
 
-    def winLostCountGamePerRankWindow(self, team1):
+    def win_lost_count_game_by_rank_window(self, team1):
         d = {"<Top10": {},
              "Top10-Top30": {},
              "Top30-Top60": {},
@@ -56,29 +56,29 @@ class TeamPickMapsConfidence():
             if game.team1.name == team1:
                 if game.team2_rank < 10:
                     d = self.updateDictionaryTopFieldAndGame(d, "<Top10", game.team1_score, game.team2_score)
-                elif game.team2_rank >= 10 and game.team2_rank < 30:
+                elif 10 <= game.team2_rank < 30:
                     d = self.updateDictionaryTopFieldAndGame(d,  "Top10-Top30", game.team1_score, game.team2_score)
-                elif game.team2_rank >= 30 and game.team2_rank < 60:
+                elif 30 <= game.team2_rank < 60:
                     d = self.updateDictionaryTopFieldAndGame(d, "Top30-Top60", game.team1_score, game.team2_score)
-                elif game.team2_rank >= 60 and game.team2_rank < 90:
+                elif 60 <= game.team2_rank < 90:
                     d = self.updateDictionaryTopFieldAndGame(d, "Top60-Top90", game.team1_score, game.team2_score)
                 else:
                     d = self.updateDictionaryTopFieldAndGame(d, ">Top90", game.team1_score, game.team2_score)
             else:
                 if game.team1_rank < 10:
                     d = self.updateDictionaryTopFieldAndGame(d, "<Top10", game.team2_score, game.team1_score)
-                elif game.team1_rank >= 10 and game.team1_rank < 30:
+                elif 10 <= game.team1_rank < 30:
                     d = self.updateDictionaryTopFieldAndGame(d, "Top10-Top30", game.team2_score, game.team1_score)
-                elif game.team1_rank >= 30 and game.team1_rank < 60:
+                elif 30 <= game.team1_rank < 60:
                     d = self.updateDictionaryTopFieldAndGame(d, "Top30-Top60", game.team2_score, game.team1_score)
-                elif game.team1_rank >= 60 and game.team1_rank < 90:
+                elif 60 <= game.team1_rank < 90:
                     d = self.updateDictionaryTopFieldAndGame(d, "Top60-Top90", game.team2_score, game.team1_score)
                 else:
                     d = self.updateDictionaryTopFieldAndGame(d, ">Top90")
         return d
 
 
-    def winLostPercentagemPerRankWindow(self, team1):
+    def win_lost_percentage_by_rank_window(self, team1):
         d= {"<Top10":{},
          "Top10-Top30":{},
          "Top30-Top60":{},

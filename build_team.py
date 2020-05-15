@@ -7,7 +7,7 @@ from datetime import datetime as dt
 from builder.player_builder import PlayerBuilder
 from builder.team_builder import TeamBuilder
 from dao.team_dao import TeamDAO
-from buildGame import BuildGame
+from build_game import BuildGame
 
 class BuildTeam:
     def __init__(self):

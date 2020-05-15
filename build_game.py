@@ -1,9 +1,8 @@
 import pandas as pd
 import requests
-from bs4 import BeautifulSoup, Comment
-from datetime import datetime as dt
+import util
 
-from util import util
+from bs4 import BeautifulSoup
 from dao.game_dao import GameDAO
 from dao.team_dao import TeamDAO
 
@@ -41,9 +40,9 @@ class BuildGame:
 
         rounds_detail_informations = soupDefault.find_all('div', attrs={'class': 'results-center-half-score'})
 
-        GameBuilder().createGame(game_info_array, picks_remove_info_array, maps_ct_tr_info_array, frames, team_rank_array, rounds_detail_informations)
+        GameBuilder().create_game(game_info_array, picks_remove_info_array, maps_ct_tr_info_array, frames, team_rank_array, rounds_detail_informations)
 
-    def gameAlreadyExist(self, game_info_array):
+    def game_already_exist(self, game_info_array):
 
         if len(game_info_array) == 19:
             return True
@@ -52,7 +51,7 @@ class BuildGame:
         team2_name = game_info_array[17]
         game_hour = game_info_array[9]
         game_date = game_info_array[10]
-        game_datetime = util().getDateTimeByDayAndTime(game_date, game_hour)
+        game_datetime = util.get_date_time_by_day_and_time(game_date, game_hour)
 
         team1 = TeamDAO().getTeamByLikeName(str(team1_name))
         if team1 == None:
