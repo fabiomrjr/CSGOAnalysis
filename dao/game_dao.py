@@ -75,10 +75,14 @@ class GameDAO(DAO):
             raise
         return dataframe
 
-    def listTeamMapsGames(self, team1_name):
+    def listTeamMapsGames(self, top, team_name):
         try:
-            dataframe = self.session.query(Game).options(selectinload(Game.team1), selectinload(Game.team2), selectinload(Game.maps)).\
-                filter(and_(Game.best_of == 3, or_(Game.team1.has(Team.name == team1_name), Game.team2.has(Team.name == team1_name)))).all()
+            if top != None:
+                dataframe = self.session.query(Game).options(selectinload(Game.team1), selectinload(Game.team2), selectinload(Game.maps)).\
+                    filter(and_(Game.best_of == 3, or_(Game.team1.has(Team.name == team_name), Game.team2.has(Team.name == team_name)))).order_by(Game.date.desc()).limit(top).all()
+            else:
+                dataframe = self.session.query(Game).options(selectinload(Game.team1), selectinload(Game.team2), selectinload(Game.maps)).\
+                    filter(and_(Game.best_of == 3, or_(Game.team1.has(Team.name == team_name), Game.team2.has(Team.name == team_name)))).all()
         except:
             self.session.rollback()
             raise

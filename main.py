@@ -37,7 +37,6 @@ def main(argv):
     elif argv[0] == "fullUpdateTeams":
         BuildTeam().fullUpdateAllTeams(int(argv[1]))
 
-
 if __name__ == "__main__":
     teste()
     # main(sys.argv[1:])

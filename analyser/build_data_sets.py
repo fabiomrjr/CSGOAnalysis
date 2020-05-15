@@ -1,5 +1,6 @@
 import pandas as pd
 from dao.game_dao import GameDAO
+from analyser.teamsIndicators import TeamIndicators
 from dao.player_map_stats_dao import PlayerMapStatsDAO
 
 
@@ -142,6 +143,7 @@ class BuildDataSet():
                                    'Team2RoundsPlusMinosVertigo', 'Team2RoundsPlusMinosTrain',
                                    'Team2RoundsPlusMinosCache'
                                    ])
+        #Listar os mapas do jogo tambem
         games = GameDAO().listLastGames()
         counter = 0
         for game in games:
@@ -154,26 +156,36 @@ class BuildDataSet():
             if len(team1LastGames) < 10 or len(team2LastGames) < 10:
                 continue
 
-            team1Confidence = self.get_pick_confidence(team1LastGames, game.id_team1)
-            team2Confidence = self.get_pick_confidence(team2LastGames, game.id_team2)
+            team1Confidence = TeamIndicators().getPickConfidence(team1LastGames, game.id_team1)
+            team2Confidence = TeamIndicators().getPickConfidence(team2LastGames, game.id_team2)
 
-            winPercentageTeam1 = self.get_win_percentage(team1LastGames, game.id_team1)
-            winPercentageTeam2 = self.get_win_percentage(team2LastGames, game.id_team2)
+            df.loc[counter, 'Map1', 'Map2', 'Map3'] = team1Confidence
+            df.loc[counter, 'Team1Confidence'] = team1Confidence
+
+            team1Games = GameDAO().listTeamMapsGames(10, game.team1.name)
+            team2Games = GameDAO().listTeamMapsGames(10, game.team2.name)
+
+            confidenceTeam1 = TeamIndicators().getTeamConfidenceByMap(game.team1.id_team, team1Games)
+            confidenceTeam2 = TeamIndicators().getTeamConfidenceByMap(game.team2.id_team, team2Games)
+
+
+            winPercentageTeam1 = TeamIndicators().get_win_percentage(team1LastGames, game.id_team1)
+            winPercentageTeam2 = TeamIndicators().get_win_percentage(team2LastGames, game.id_team2)
 
             game.team1_rank
             game.team2_rank
 
-            averageOppRankTeam1 = self.getAverageOppRank(team1LastGames, game.id_team1)
-            averageOppRankTeam2 = self.getAverageOppRank(team2LastGames, game.id_team2)
+            averageOppRankTeam1 = TeamIndicators().getAverageOppRank(team1LastGames, game.id_team1)
+            averageOppRankTeam2 = TeamIndicators().getAverageOppRank(team2LastGames, game.id_team2)
 
             gamesWithTeam1PlayersStats = GameDAO().listTeamLastGamesWithPlayersStats(game.id_game, game.id_team1, 150)
             gamesWithTeam2PlayersStats = GameDAO().listTeamLastGamesWithPlayersStats(game.id_game, game.id_team2, 150)
 
-            plusMinosPlayersTeam1 = self.getPlusMinosPlayersTeam(gamesWithTeam1PlayersStats)
-            plusMinosPlayersTeam2 = self.getPlusMinosPlayersTeam(gamesWithTeam2PlayersStats)
+            plusMinosPlayersTeam1 = TeamIndicators().getPlusMinosPlayersTeam(gamesWithTeam1PlayersStats)
+            plusMinosPlayersTeam2 = TeamIndicators().getPlusMinosPlayersTeam(gamesWithTeam2PlayersStats)
 
-            plusMinosRoundsTeam1 = self.getPlusMinosRoundsTeam(team1LastGames, game.id_team1)
-            plusMinosRoundsTeam2 = self.getPlusMinosRoundsTeam(team2LastGames, game.id_team2)
+            plusMinosRoundsTeam1 = TeamIndicators().getPlusMinosRoundsTeam(team1LastGames, game.id_team1)
+            plusMinosRoundsTeam2 = TeamIndicators().getPlusMinosRoundsTeam(team2LastGames, game.id_team2)
 
             df.loc[counter, 'Team1Confidence'] = team1Confidence
             df.loc[counter, 'Team2Confidence'] = team2Confidence
