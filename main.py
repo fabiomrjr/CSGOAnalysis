@@ -21,8 +21,8 @@ def teste():
     # BuildTeam().checkForOneTeam("100 Thieves")
     # endDate = dt.now()
     # print("All operations. Seconds " + str((endDate - startDate).total_seconds()))
-    # BuildDataSet().getDataSet()
-    BuildDataSet().decision_tree_machine_learning()
+    BuildDataSet().get_data_set()
+    # BuildDataSet().decision_tree_machine_learning()
     # BuildGame().check("https://www.hltv.org/matches/2340651/natus-vincere-vs-fnatic-esl-pro-league-season-11-europe")
 
 

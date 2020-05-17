@@ -1,107 +1,22 @@
 import pandas as pd
+import analyser.team_indicators as team_indicators
+
 from dao.game_dao import GameDAO
-from analyser.teamsIndicators import TeamIndicators
+from analyser.team_indicators import TeamIndicators
 from dao.player_map_stats_dao import PlayerMapStatsDAO
 
+number_maps_to_consider = 30
 
-class BuildDataSet():
+
+class BuildDataSet:
     def __init__(self):
         pass
 
-    def get_pick_confidence(self, last_games, team_id):
-        d = {}
-        wins = 0
-        picks = 0
-        for game in last_games:
-            if game.id_team1 == team_id:
-                for map in game.maps:
-                    if map.map_name == game.team1_picks_maps:
-                        if d.get(map.map_name) is None:
-                            d2 = {map.map_name: {"Pick": 1, "Win": 0, "Confidence": 0.0}}
-                            if map.team1_total_rounds > map.team2_total_rounds:
-                                d2[map.map_name]["Win"] = 1
-                            else:
-                                d2[map.map_name]["Win"] = 0
-                            d.update(d2)
-                        else:
-                            d[map.map_name]["Pick"] = d[map.map_name]["Pick"] + 1
-                            if map.team1_total_rounds > map.team2_total_rounds:
-                                d[map.map_name]["Win"] = d[map.map_name]["Win"] + 1
-            elif game.id_team2 == team_id:
-                for map in game.maps:
-                    if map.map_name == game.team2_picks_maps:
-                        if d.get(map.map_name) is None:
-                            d2 = {map.map_name: {"Pick": 1, "Win": 0, "Confidence": 0.0}}
-                            if map.team2_total_rounds > map.team1_total_rounds:
-                                d2[map.map_name]["Win"] = 1
-                            else:
-                                d2[map.map_name]["Win"] = 0
-                            d.update(d2)
-                        else:
-                            d[map.map_name]["Pick"] = d[map.map_name]["Pick"] + 1
-                            if map.team2_total_rounds > map.team1_total_rounds:
-                                d[map.map_name]["Win"] = d[map.map_name]["Win"] + 1
-        for item in d:
-            wins = wins + int(d[item]["Win"])
-            picks = picks + int(d[item]["Pick"])
-
-        return 100 * wins / picks
-
-    def get_win_percentage(self, last_games, team_id):
-        wins = 0
-        lost = 0
-        for game in last_games:
-            if game.id_team1 == team_id:
-                for map in game.maps:
-                    if map.team1_total_rounds > map.team2_total_rounds:
-                        wins = wins + 1
-                    else:
-                        lost = lost + 1
-            elif game.id_team2 == team_id:
-                for map in game.maps:
-                    if map.team2_total_rounds > map.team1_total_rounds:
-                        wins = wins + 1
-                    else:
-                        lost = lost + 1
-
-        return 100 * wins / (wins + lost)
-
-    def getAverageOppRank(self, lastGames, team_id):
-        rankSum = 0
-        for game in lastGames:
-            if game.id_team1 == team_id:
-                rankSum = rankSum + game.team2_rank
-            elif game.id_team2 == team_id:
-                rankSum = rankSum + game.team1_rank
-
-        return 100 * rankSum / len(lastGames)
-
-    def getPlusMinosPlayersTeam(self, games):
-        sumPlusMinos = 0
-        for game in games:
-            for map in game.maps:
-                for playerStats in map.player_map_stats:
-                    sumPlusMinos = sumPlusMinos + playerStats.plus_minos
-
-        return sumPlusMinos
-
-    def getPlusMinosRoundsTeam(self, games, team_id):
-        sumPlusMinos = 0
-        for game in games:
-            if game.id_team1 == team_id:
-                for map in game.maps:
-                    sumPlusMinos = sumPlusMinos + map.team1_total_rounds - map.team2_total_rounds
-            else:
-                for map in game.maps:
-                    sumPlusMinos = sumPlusMinos + map.team2_total_rounds - map.team1_total_rounds
-
-        return sumPlusMinos
-
-    def getDataSet(self):
-        df = pd.DataFrame(columns=['Team1Confidence', 'Team1WinPercentage', 'Team1Rank', 'Team1AverageOppRank',
-                                   'Team1PlayersPlusMinos', 'Team1RoundsPlusMinos',
-                                   'Team2Confidence', 'Team2WinPercentage', 'Team2Rank', 'Team2AverageOppRank',
-                                   'Team2PlayersPlusMinos', 'Team2RoundsPlusMinos', 'Team1Winner'])
+    def get_data_set(self):
+        # df = pd.DataFrame(columns=['Team1Confidence', 'Team1WinPercentage', 'Team1Rank', 'Team1AverageOppRank',
+        #                           'Team1PlayersPlusMinos', 'Team1RoundsPlusMinos',
+        #                           'Team2Confidence', 'Team2WinPercentage', 'Team2Rank', 'Team2AverageOppRank',
+        #                           'Team2PlayersPlusMinos', 'Team2RoundsPlusMinos', 'Team1Winner'])
 
         df = pd.DataFrame(columns=['Map1', 'Map2', 'Map3', 'Team1Rank', 'Team2Rank',
                                    'Team1WinPercentageMirage', 'Team1WinPercentageDust2', 'Team1WinPercentageNuke',
@@ -110,18 +25,21 @@ class BuildDataSet():
                                    'Team2WinPercentageMirage', 'Team2WinPercentageDust2', 'Team2WinPercentageNuke',
                                    'Team2WinPercentageOverpass', 'Team2WinPercentageInferno',
                                    'Team2WinPercentageVertigo', 'Team2WinPercentageTrain', 'Team2WinPercentageCache',
+
                                    'Team1ConfidencePickMirage', 'Team1ConfidencePickDust2', 'Team1ConfidencePickNuke',
                                    'Team1ConfidencePickOverpass', 'Team1ConfidencePickInferno',
                                    'Team1ConfidencePickVertigo', 'Team1ConfidencePickTrain', 'Team1ConfidencePickCache',
                                    'Team2ConfidencePickMirage', 'Team2ConfidencePickDust2', 'Team2ConfidencePickNuke',
                                    'Team2ConfidencePickOverpass', 'Team2ConfidencePickInferno',
                                    'Team2ConfidencePickVertigo', 'Team2ConfidencePickTrain', 'Team2ConfidencePickCache',
+
                                    'Team1AverageOppRankMirage', 'Team1AverageOppRankDust2', 'Team1AverageOppRankNuke',
                                    'Team1AverageOppRankOverpass', 'Team1AverageOppRankInferno',
                                    'Team1AverageOppRankVertigo', 'Team1AverageOppRankTrain', 'Team1AverageOppRankCache',
                                    'Team2AverageOppRankMirage', 'Team2AverageOppRankDust2', 'Team2AverageOppRankNuke',
                                    'Team2AverageOppRankOverpass', 'Team2AverageOppRankInferno',
                                    'Team2AverageOppRankVertigo', 'Team2AverageOppRankTrain', 'Team2AverageOppRankCache',
+
                                    'Team1PlayersPlusMinosMirage', 'Team1PlayersPlusMinosDust2',
                                    'Team1PlayersPlusMinosNuke', 'Team1PlayersPlusMinosOverpass',
                                    'Team1PlayersPlusMinosInferno',
@@ -132,6 +50,7 @@ class BuildDataSet():
                                    'Team2PlayersPlusMinosInferno',
                                    'Team2PlayersPlusMinosVertigo', 'Team2PlayersPlusMinosTrain',
                                    'Team2PlayersPlusMinosCache',
+
                                    'Team1RoundsPlusMinosMirage', 'Team1RoundsPlusMinosDust2',
                                    'Team1RoundsPlusMinosNuke', 'Team1RoundsPlusMinosOverpass',
                                    'Team1RoundsPlusMinosInferno',
@@ -141,64 +60,157 @@ class BuildDataSet():
                                    'Team2RoundsPlusMinosNuke', 'Team2RoundsPlusMinosOverpass',
                                    'Team2RoundsPlusMinosInferno',
                                    'Team2RoundsPlusMinosVertigo', 'Team2RoundsPlusMinosTrain',
-                                   'Team2RoundsPlusMinosCache'
-                                   ])
-        #Listar os mapas do jogo tambem
-        games = GameDAO().listLastGames()
-        counter = 0
+                                   'Team2RoundsPlusMinosCache',
+                                   'Team1Winner'])
+
+        games = GameDAO().list_last_games()
+        # counter = 0
         for game in games:
-            if counter == 500:
-                break
+            # if counter == 500:
+            #    break
 
-            team1LastGames = GameDAO().listTeamLastMapsGames(game.id_game, game.id_team1, 10)
-            team2LastGames = GameDAO().listTeamLastMapsGames(game.id_game, game.id_team2, 10)
+            team1_last_10_games = GameDAO().listTeamLastMapsGames(game.id_game, game.id_team1, number_maps_to_consider)
+            team2_last_10_games = GameDAO().listTeamLastMapsGames(game.id_game, game.id_team2, number_maps_to_consider)
 
-            if len(team1LastGames) < 10 or len(team2LastGames) < 10:
+            if len(team1_last_10_games) < number_maps_to_consider or len(team2_last_10_games) < number_maps_to_consider:
                 continue
 
-            team1Confidence = TeamIndicators().getPickConfidence(team1LastGames, game.id_team1)
-            team2Confidence = TeamIndicators().getPickConfidence(team2LastGames, game.id_team2)
+            team1_confidence = team_indicators.get_team_confidence(team1_last_10_games, game.id_team1)
+            team2_confidence = team_indicators.get_team_confidence(team2_last_10_games, game.id_team2)
 
-            df.loc[counter, 'Map1', 'Map2', 'Map3'] = team1Confidence
-            df.loc[counter, 'Team1Confidence'] = team1Confidence
+            win_percentage_team1 = TeamIndicators().win_lost_percentage_by_rank_window_and_maps(game.id_team1,
+                                                                                                team1_last_10_games)
+            win_percentage_team2 = TeamIndicators().win_lost_percentage_by_rank_window_and_maps(game.id_team2,
+                                                                                                team2_last_10_games)
 
-            team1Games = GameDAO().listTeamMapsGames(10, game.team1.name)
-            team2Games = GameDAO().listTeamMapsGames(10, game.team2.name)
+            win_percentage_team1_by_map = TeamIndicators().get_win_percentage_by_maps_and_opp_rank_dictionary(
+                win_percentage_team1, game.team2_rank,
+                ["Dust2", "Inferno", "Overpass", "Vertigo", "Nuke", "Mirage", "Train", "Cache"])
+            win_percentage_team2_by_map = TeamIndicators().get_win_percentage_by_maps_and_opp_rank_dictionary(
+                win_percentage_team2, game.team1_rank,
+                ["Dust2", "Inferno", "Overpass", "Vertigo", "Nuke", "Mirage", "Train", "Cache"])
 
-            confidenceTeam1 = TeamIndicators().getTeamConfidenceByMap(game.team1.id_team, team1Games)
-            confidenceTeam2 = TeamIndicators().getTeamConfidenceByMap(game.team2.id_team, team2Games)
+            average_opp_rank_team1 = team_indicators.get_average_opp_rank_by_map(team1_last_10_games, game.id_team1)
+            average_opp_rank_team2 = team_indicators.get_average_opp_rank_by_map(team2_last_10_games, game.id_team2)
 
+            plus_minos_rounds_team1 = team_indicators.get_plus_minos_rounds_team(team1_last_10_games, game.id_team1)
+            plus_minos_rounds_team2 = team_indicators.get_plus_minos_rounds_team(team2_last_10_games, game.id_team2)
 
-            winPercentageTeam1 = TeamIndicators().get_win_percentage(team1LastGames, game.id_team1)
-            winPercentageTeam2 = TeamIndicators().get_win_percentage(team2LastGames, game.id_team2)
+            gamesWithTeam1PlayersStats = GameDAO().listTeamLastGamesWithPlayersStats(game.id_game, game.id_team1,
+                                                                                     15 * number_maps_to_consider)
+            gamesWithTeam2PlayersStats = GameDAO().listTeamLastGamesWithPlayersStats(game.id_game, game.id_team2,
+                                                                                     15 * number_maps_to_consider)
 
-            game.team1_rank
-            game.team2_rank
+            plus_minos_players_team1 = team_indicators.get_plus_minos_players_team(gamesWithTeam1PlayersStats)
+            plus_minos_players_team2 = team_indicators.get_plus_minos_players_team(gamesWithTeam2PlayersStats)
 
-            averageOppRankTeam1 = TeamIndicators().getAverageOppRank(team1LastGames, game.id_team1)
-            averageOppRankTeam2 = TeamIndicators().getAverageOppRank(team2LastGames, game.id_team2)
-
-            gamesWithTeam1PlayersStats = GameDAO().listTeamLastGamesWithPlayersStats(game.id_game, game.id_team1, 150)
-            gamesWithTeam2PlayersStats = GameDAO().listTeamLastGamesWithPlayersStats(game.id_game, game.id_team2, 150)
-
-            plusMinosPlayersTeam1 = TeamIndicators().getPlusMinosPlayersTeam(gamesWithTeam1PlayersStats)
-            plusMinosPlayersTeam2 = TeamIndicators().getPlusMinosPlayersTeam(gamesWithTeam2PlayersStats)
-
-            plusMinosRoundsTeam1 = TeamIndicators().getPlusMinosRoundsTeam(team1LastGames, game.id_team1)
-            plusMinosRoundsTeam2 = TeamIndicators().getPlusMinosRoundsTeam(team2LastGames, game.id_team2)
-
-            df.loc[counter, 'Team1Confidence'] = team1Confidence
-            df.loc[counter, 'Team2Confidence'] = team2Confidence
-            df.loc[counter, 'Team1WinPercentage'] = winPercentageTeam1
-            df.loc[counter, 'Team2WinPercentage'] = winPercentageTeam2
             df.loc[counter, 'Team1Rank'] = game.team1_rank
             df.loc[counter, 'Team2Rank'] = game.team2_rank
-            df.loc[counter, 'Team1AverageOppRank'] = averageOppRankTeam1
-            df.loc[counter, 'Team2AverageOppRank'] = averageOppRankTeam2
-            df.loc[counter, 'Team1PlayersPlusMinos'] = plusMinosPlayersTeam1
-            df.loc[counter, 'Team2PlayersPlusMinos'] = plusMinosPlayersTeam2
-            df.loc[counter, 'Team1RoundsPlusMinos'] = plusMinosRoundsTeam1
-            df.loc[counter, 'Team2RoundsPlusMinos'] = plusMinosRoundsTeam2
+            df.loc[counter, 'Map1'] = game.team1_picks_maps
+            df.loc[counter, 'Map2'] = game.team2_picks_maps
+            df.loc[counter, 'Map3'] = game.map_left
+
+            df.loc[counter, 'Team1WinPercentageMirage'] = win_percentage_team1_by_map["Mirage"]
+            df.loc[counter, 'Team1WinPercentageDust2'] = win_percentage_team1_by_map["Dust2"]
+            df.loc[counter, 'Team1WinPercentageNuke'] = win_percentage_team1_by_map["Nuke"]
+            df.loc[counter, 'Team1WinPercentageOverpass'] = win_percentage_team1_by_map["Overpass"]
+            df.loc[counter, 'Team1WinPercentageInferno'] = win_percentage_team1_by_map["Inferno"]
+            df.loc[counter, 'Team1WinPercentageVertigo'] = win_percentage_team1_by_map["Vertigo"]
+            df.loc[counter, 'Team1WinPercentageTrain'] = win_percentage_team1_by_map["Train"]
+            df.loc[counter, 'Team1WinPercentageCache'] = win_percentage_team1_by_map["Cache"]
+            df.loc[counter, 'Team2WinPercentageMirage'] = win_percentage_team2_by_map["Mirage"]
+            df.loc[counter, 'Team2WinPercentageDust2'] = win_percentage_team2_by_map["Dust2"]
+            df.loc[counter, 'Team2WinPercentageNuke'] = win_percentage_team2_by_map["Nuke"]
+            df.loc[counter, 'Team2WinPercentageOverpass'] = win_percentage_team2_by_map["Overpass"]
+            df.loc[counter, 'Team2WinPercentageInferno'] = win_percentage_team2_by_map["Inferno"]
+            df.loc[counter, 'Team2WinPercentageVertigo'] = win_percentage_team2_by_map["Vertigo"]
+            df.loc[counter, 'Team2WinPercentageTrain'] = win_percentage_team2_by_map["Train"]
+            df.loc[counter, 'Team2WinPercentageCache'] = win_percentage_team2_by_map["Cache"]
+
+            df.loc[counter, 'Team1ConfidencePickMirage'] = team1_confidence["Mirage"]["Confidence"]
+            df.loc[counter, 'Team1ConfidencePickDust2'] = team1_confidence["Dust2"]["Confidence"]
+            df.loc[counter, 'Team1ConfidencePickNuke'] = team1_confidence["Nuke"]["Confidence"]
+            df.loc[counter, 'Team1ConfidencePickOverpass'] = team1_confidence["Overpass"]["Confidence"]
+            df.loc[counter, 'Team1ConfidencePickInferno'] = team1_confidence["Inferno"]["Confidence"]
+            df.loc[counter, 'Team1ConfidencePickVertigo'] = team1_confidence["Vertigo"]["Confidence"]
+            df.loc[counter, 'Team1ConfidencePickTrain'] = team1_confidence["Train"]["Confidence"]
+            df.loc[counter, 'Team1ConfidencePickCache'] = team1_confidence["Cache"]["Confidence"]
+            df.loc[counter, 'Team2ConfidencePickMirage'] = team2_confidence["Mirage"]["Confidence"]
+            df.loc[counter, 'Team2ConfidencePickDust2'] = team2_confidence["Dust2"]["Confidence"]
+            df.loc[counter, 'Team2ConfidencePickNuke'] = team2_confidence["Nuke"]["Confidence"]
+            df.loc[counter, 'Team2ConfidencePickOverpass'] = team2_confidence["Overpass"]["Confidence"]
+            df.loc[counter, 'Team2ConfidencePickInferno'] = team2_confidence["Inferno"]["Confidence"]
+            df.loc[counter, 'Team2ConfidencePickVertigo'] = team2_confidence["Vertigo"]["Confidence"]
+            df.loc[counter, 'Team2ConfidencePickTrain'] = team2_confidence["Train"]["Confidence"]
+            df.loc[counter, 'Team2ConfidencePickCache'] = team2_confidence["Cache"]["Confidence"]
+
+            df.loc[counter, 'Team1AverageOppRankMirage'] = average_opp_rank_team1["Mirage"]["average"] if \
+                average_opp_rank_team1.get("Mirage") is not None else 0.0
+            df.loc[counter, 'Team1AverageOppRankDust2'] = average_opp_rank_team1["Dust2"]["average"] if \
+                average_opp_rank_team1.get("Dust2") is not None else 0.0
+            df.loc[counter, 'Team1AverageOppRankNuke'] = average_opp_rank_team1["Nuke"]["average"] if \
+                average_opp_rank_team1.get("Nuke") is not None else 0.0
+            df.loc[counter, 'Team1AverageOppRankOverpass'] = average_opp_rank_team1["Overpass"]["average"] if \
+                average_opp_rank_team1.get("Overpass") is not None else 0.0
+            df.loc[counter, 'Team1AverageOppRankInferno'] = average_opp_rank_team1["Inferno"]["average"] if \
+                average_opp_rank_team1.get("Inferno") is not None else 0.0
+            df.loc[counter, 'Team1AverageOppRankVertigo'] = average_opp_rank_team1["Vertigo"]["average"] if \
+                average_opp_rank_team1.get("Vertigo") is not None else 0.0
+            df.loc[counter, 'Team1AverageOppRankTrain'] = average_opp_rank_team1["Train"]["average"] if \
+                average_opp_rank_team1.get("Train") is not None else 0.0
+            df.loc[counter, 'Team1AverageOppRankCache'] = average_opp_rank_team1["Cache"]["average"] if \
+                average_opp_rank_team1.get("Cache") is not None else 0.0
+            df.loc[counter, 'Team2AverageOppRankMirage'] = average_opp_rank_team2["Mirage"]["average"] if \
+                average_opp_rank_team2.get("Mirage") is not None else 0.0
+            df.loc[counter, 'Team2AverageOppRankDust2'] = average_opp_rank_team2["Dust2"]["average"] if \
+                average_opp_rank_team2.get("Dust2") is not None else 0.0
+            df.loc[counter, 'Team2AverageOppRankNuke'] = average_opp_rank_team2["Nuke"]["average"] if \
+                average_opp_rank_team2.get("Nuke") is not None else 0.0
+            df.loc[counter, 'Team2AverageOppRankOverpass'] = average_opp_rank_team2["Overpass"]["average"] if \
+                average_opp_rank_team2.get("Overpass") is not None else 0.0
+            df.loc[counter, 'Team2AverageOppRankInferno'] = average_opp_rank_team2["Inferno"]["average"] if \
+                average_opp_rank_team2.get("Inferno") is not None else 0.0
+            df.loc[counter, 'Team2AverageOppRankVertigo'] = average_opp_rank_team2["Vertigo"]["average"] if \
+                average_opp_rank_team2.get("Vertigo") is not None else 0.0
+            df.loc[counter, 'Team2AverageOppRankTrain'] = average_opp_rank_team2["Train"]["average"] if \
+                average_opp_rank_team2.get("Train") is not None else 0.0
+            df.loc[counter, 'Team2AverageOppRankCache'] = average_opp_rank_team2["Cache"]["average"] if \
+                average_opp_rank_team2.get("Cache") is not None else 0.0
+
+            df.loc[counter, 'Team1PlayersPlusMinosMirage'] = plus_minos_players_team1["Mirage"]["plusMinosPlayers"]
+            df.loc[counter, 'Team1PlayersPlusMinosDust2'] = plus_minos_players_team1["Dust2"]["plusMinosPlayers"]
+            df.loc[counter, 'Team1PlayersPlusMinosNuke'] = plus_minos_players_team1["Nuke"]["plusMinosPlayers"]
+            df.loc[counter, 'Team1PlayersPlusMinosOverpass'] = plus_minos_players_team1["Overpass"]["plusMinosPlayers"]
+            df.loc[counter, 'Team1PlayersPlusMinosInferno'] = plus_minos_players_team1["Inferno"]["plusMinosPlayers"]
+            df.loc[counter, 'Team1PlayersPlusMinosVertigo'] = plus_minos_players_team1["Vertigo"]["plusMinosPlayers"]
+            df.loc[counter, 'Team1PlayersPlusMinosTrain'] = plus_minos_players_team1["Train"]["plusMinosPlayers"]
+            df.loc[counter, 'Team1PlayersPlusMinosCache'] = plus_minos_players_team1["Cache"]["plusMinosPlayers"]
+            df.loc[counter, 'Team2PlayersPlusMinosMirage'] = plus_minos_players_team2["Mirage"]["plusMinosPlayers"]
+            df.loc[counter, 'Team2PlayersPlusMinosDust2'] = plus_minos_players_team2["Dust2"]["plusMinosPlayers"]
+            df.loc[counter, 'Team2PlayersPlusMinosNuke'] = plus_minos_players_team2["Nuke"]["plusMinosPlayers"]
+            df.loc[counter, 'Team2PlayersPlusMinosOverpass'] = plus_minos_players_team2["Overpass"]["plusMinosPlayers"]
+            df.loc[counter, 'Team2PlayersPlusMinosInferno'] = plus_minos_players_team2["Inferno"]["plusMinosPlayers"]
+            df.loc[counter, 'Team2PlayersPlusMinosVertigo'] = plus_minos_players_team2["Vertigo"]["plusMinosPlayers"]
+            df.loc[counter, 'Team2PlayersPlusMinosTrain'] = plus_minos_players_team2["Train"]["plusMinosPlayers"]
+            df.loc[counter, 'Team2PlayersPlusMinosCache'] = plus_minos_players_team2["Cache"]["plusMinosPlayers"]
+
+            df.loc[counter, 'Team1RoundsPlusMinosMirage'] = plus_minos_rounds_team1["Mirage"]["plusMinosRounds"]
+            df.loc[counter, 'Team1RoundsPlusMinosDust2'] = plus_minos_rounds_team1["Dust2"]["plusMinosRounds"]
+            df.loc[counter, 'Team1RoundsPlusMinosNuke'] = plus_minos_rounds_team1["Nuke"]["plusMinosRounds"]
+            df.loc[counter, 'Team1RoundsPlusMinosOverpass'] = plus_minos_rounds_team1["Overpass"]["plusMinosRounds"]
+            df.loc[counter, 'Team1RoundsPlusMinosInferno'] = plus_minos_rounds_team1["Inferno"]["plusMinosRounds"]
+            df.loc[counter, 'Team1RoundsPlusMinosVertigo'] = plus_minos_rounds_team1["Vertigo"]["plusMinosRounds"]
+            df.loc[counter, 'Team1RoundsPlusMinosTrain'] = plus_minos_rounds_team1["Train"]["plusMinosRounds"]
+            df.loc[counter, 'Team1RoundsPlusMinosCache'] = plus_minos_rounds_team1["Cache"]["plusMinosRounds"]
+            df.loc[counter, 'Team2RoundsPlusMinosMirage'] = plus_minos_rounds_team2["Mirage"]["plusMinosRounds"]
+            df.loc[counter, 'Team2RoundsPlusMinosDust2'] = plus_minos_rounds_team2["Dust2"]["plusMinosRounds"]
+            df.loc[counter, 'Team2RoundsPlusMinosNuke'] = plus_minos_rounds_team2["Nuke"]["plusMinosRounds"]
+            df.loc[counter, 'Team2RoundsPlusMinosOverpass'] = plus_minos_rounds_team2["Overpass"]["plusMinosRounds"]
+            df.loc[counter, 'Team2RoundsPlusMinosInferno'] = plus_minos_rounds_team2["Inferno"]["plusMinosRounds"]
+            df.loc[counter, 'Team2RoundsPlusMinosVertigo'] = plus_minos_rounds_team2["Vertigo"]["plusMinosRounds"]
+            df.loc[counter, 'Team2RoundsPlusMinosTrain'] = plus_minos_rounds_team2["Train"]["plusMinosRounds"]
+            df.loc[counter, 'Team2RoundsPlusMinosCache'] = plus_minos_rounds_team2["Cache"]["plusMinosRounds"]
+
             df.loc[counter, 'Team1Winner'] = 1 if game.team1_score > game.team2_score else 0
 
             counter = counter + 1

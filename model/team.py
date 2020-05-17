@@ -34,6 +34,10 @@ class Team(base):
         self.homepage = homepage
         self.hltv_id = hltv_id
 
-    def json(self):
-       return {'Need to be implemented' + 'date': self.date.strftime('%b %d %Y %I:%M%p')}\
+    def __init__(self, id, name, homepage, actual_rank, hltv_id):
+        self.id_team = id
+        self.actual_rank = actual_rank
+        self.name = name
+        self.homepage = homepage
+        self.hltv_id = hltv_id
 

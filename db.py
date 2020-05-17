@@ -97,7 +97,7 @@ class db():
 
         self.meta.create_all(self.engine)
 
-        #column = Column('macdsub', Float(precision=8))
-        #column_name = column.compile(dialect=self.engine.dialect)
-        #column_type = column.type.compile(self.engine.dialect)
-        #self.engine.execute('ALTER TABLE %s ADD COLUMN %s %s' % ('candlesbyminute', column_name, column_type))
+        column = Column('map_left', String(100))
+        column_name = column.compile(dialect=self.engine.dialect)
+        column_type = column.type.compile(self.engine.dialect)
+        self.engine.execute('ALTER TABLE %s ADD COLUMN %s %s' % ('game', column_name, column_type))

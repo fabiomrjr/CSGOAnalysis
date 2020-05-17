@@ -3,7 +3,7 @@ from datetime import timedelta as td
 #from ..model.team import Team
 from sqlalchemy import Column, Integer, Float, BigInteger, DateTime, ForeignKey, String
 from sqlalchemy.ext.declarative import declarative_base
-#from base import base
+from model.player_map_statistic import PlayerMapStatistic
 from db import base
 from sqlalchemy.orm import relationship
 

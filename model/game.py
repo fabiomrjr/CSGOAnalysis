@@ -5,6 +5,7 @@ from sqlalchemy import Column, Integer, Float, BigInteger, DateTime, ForeignKey,
 from sqlalchemy.ext.declarative import declarative_base
 #from base import base
 from model.map import Map
+from model.championship import Championship
 from db import base
 from sqlalchemy.orm import relationship
 
@@ -28,6 +29,7 @@ class Game(base):
     team2_picks_maps = Column(String(100))
     team1_removed_maps = Column(String(100))
     team2_removed_maps = Column(String(100))
+    map_left = Column(String(100))
     team1_rank = Column(Integer)
     team2_rank = Column(Integer)
 
@@ -43,7 +45,7 @@ class Game(base):
         pass
 
     def __init__(self, championship_id, team1_id, team2_id, startDateTime, team1_score, team2_score, winner_team_id, best_of, team1_picks_maps, team2_picks_maps,
-                 team1_removed_maps, team2_removed_maps, team1_rank, team2_rank):
+                 team1_removed_maps, team2_removed_maps, map_left, team1_rank, team2_rank):
         self.id_championship = championship_id
         self.id_team1 = team1_id
         self.id_team2 = team2_id
@@ -56,11 +58,12 @@ class Game(base):
         self.team2_picks_maps = team2_picks_maps
         self.team1_removed_maps = team1_removed_maps
         self.team2_removed_maps = team2_removed_maps
+        self.map_left = map_left
         self.team1_rank = team1_rank
         self.team2_rank = team2_rank
 
     def update(self, championship_id, team1_id, team2_id, startdateTime, team1_score, team2_score, winner_team_id, best_of, team1_picks_maps, team2_picks_maps,
-               team1_removed_maps, team2_removed_maps, team1_rank, team2_rank):
+               team1_removed_maps, team2_removed_maps, map_left, team1_rank, team2_rank):
         self.id_championship = championship_id
         self.id_team1 = team1_id
         self.id_team2 = team2_id
@@ -73,6 +76,7 @@ class Game(base):
         self.team2_picks_maps = team2_picks_maps
         self.team1_removed_maps = team1_removed_maps
         self.team2_removed_maps = team2_removed_maps
+        self.map_left = map_left
         self.team1_rank = team1_rank
         self.team2_rank = team2_rank
 

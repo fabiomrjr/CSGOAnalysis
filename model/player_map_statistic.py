@@ -4,6 +4,7 @@ from sqlalchemy import Column, Integer, Float, BigInteger, DateTime, ForeignKey,
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from db import base
+from .player import Player
 Base = declarative_base()
 
 class PlayerMapStatistic(base):
@@ -21,9 +22,9 @@ class PlayerMapStatistic(base):
     kast = Column(Float(precision=2))
     rating2 = Column(Float(precision=2))
 
-    player_of_stats = relationship("Player", lazy="noload",foreign_keys="PlayerMapStatistic.id_player")#, backref="player_stats")
-    team_of_stats = relationship("Team", lazy="noload", foreign_keys="PlayerMapStatistic.id_team_player")#, backref="team_stats")
-    map_of_stats = relationship("Map", lazy="noload", foreign_keys="PlayerMapStatistic.id_map_game")#, backref="game_stats")
+    player_of_stats = relationship("Player", lazy="noload",foreign_keys="PlayerMapStatistic.id_player", backref="player_stats")
+    team_of_stats = relationship("Team", lazy="noload", foreign_keys="PlayerMapStatistic.id_team_player", backref="team_stats")
+    map_of_stats = relationship("Map", lazy="noload", foreign_keys="PlayerMapStatistic.id_map_game", backref="map_stats")
 
     def __init__(self):
         pass
