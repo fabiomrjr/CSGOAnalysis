@@ -8,8 +8,8 @@ class TeamDAO(DAO):
     def __init__(self):
         DAO.__init__(self)
 
-    def createTeam(self, name, homepage, actual_rank, hltv_id):
-        c1 = Team(name, homepage, actual_rank, hltv_id)
+    def create_team(self, name, homepage, actual_rank, hltv_id):
+        c1 = Team(name=name, homepage=homepage, actual_rank=actual_rank, hltv_id=hltv_id)
 
         try:
             self.session.add(c1)
@@ -46,7 +46,7 @@ class TeamDAO(DAO):
 
     def listTeamsWithHomePage(self):
         try:
-            item = self.session.query(Team).filter(and_(Team.homepage.isnot(None), Team.homepage != "")).all()
+            item = self.session.query(Team).filter(and_(Team.homepage.isnot(None), Team.homepage != "", Team.id_team >= 28)).all()
         except:
             self.session.rollback()
             raise

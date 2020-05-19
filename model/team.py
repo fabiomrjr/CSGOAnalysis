@@ -25,19 +25,12 @@ class Team(base):
     t_games_as_team1 = relationship("Game", lazy="noload", foreign_keys="Game.id_team1", back_populates="team1")
     t_games_at_team2 = relationship("Game", lazy="noload", foreign_keys="Game.id_team2", back_populates="team2")
 
-    def __init__(self):
-        pass
-
-    def __init__(self, name, homepage, actual_rank, hltv_id):
-        self.actual_rank = actual_rank
-        self.name = name
-        self.homepage = homepage
-        self.hltv_id = hltv_id
-
-    def __init__(self, id, name, homepage, actual_rank, hltv_id):
+    def __init__(self, id=None, name=None, homepage=None, actual_rank=None, hltv_id=None):
         self.id_team = id
         self.actual_rank = actual_rank
         self.name = name
         self.homepage = homepage
         self.hltv_id = hltv_id
+
+
 

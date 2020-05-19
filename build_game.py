@@ -54,15 +54,16 @@ class BuildGame:
         game_datetime = util.get_date_time_by_day_and_time(game_date, game_hour)
 
         team1 = TeamDAO().getTeamByLikeName(str(team1_name))
-        if team1 == None:
-            team1 = TeamDAO().createTeam(team1_name, "", None, None)
+        if team1 is None:
+            team1 = TeamDAO().create_team(team1_name, "", None, None)
 
         team2 = TeamDAO().getTeamByLikeName(str(team2_name))
-        if team2 == None:
-            team2 = TeamDAO().createTeam(team2_name, "", None, None)
+        if team2 is None:
+            team2 = TeamDAO().create_team(team2_name, "", None, None)
 
         game = GameDAO().getGameByTeamsAndDateTime(team1.id_team, team2.id_team, game_datetime)
-        if game != None:
+
+        if game is not None:
             return True
         else:
             return False

@@ -13,14 +13,6 @@ def teste():
     # db().createTables()
     # TeamBuilder().createDefaultTeams()
 
-    # BuildTeam().fullUpdateByTeam("forZe")
-    # BuildTeam().fullUpdateByTeam("Gambit Youngsters")
-
-    # startDate = dt.now()
-    # BuildTeam().fullUpdateAllTeams(15)
-    # BuildTeam().checkForOneTeam("100 Thieves")
-    # endDate = dt.now()
-    # print("All operations. Seconds " + str((endDate - startDate).total_seconds()))
     BuildDataSet().get_data_set()
     # BuildDataSet().decision_tree_machine_learning()
     # BuildGame().check("https://www.hltv.org/matches/2340651/natus-vincere-vs-fnatic-esl-pro-league-season-11-europe")
@@ -33,11 +25,13 @@ def main(argv):
         Analysis().get_analysis(team1, team2, argv[3].split(";"))
     elif argv[0] == "updateTeam":
         team1 = argv[1] if "-" not in argv[1] else argv[1].replace("-", " ")
-        BuildTeam().fullUpdateByTeam(team1, int(argv[2]))
+        BuildTeam().full_update_by_team(team1, int(argv[2]))
     elif argv[0] == "fullUpdateTeams":
-        BuildTeam().fullUpdateAllTeams(int(argv[1]))
+        BuildTeam().full_update_all_teams(int(argv[1]))
+    elif argv[0] == "updateTeamsMatches":
+        BuildTeam().update_matches_all_teams(int(argv[1]))
 
 
 if __name__ == "__main__":
-    teste()
-    # main(sys.argv[1:])
+    # teste()
+    main(sys.argv[1:])

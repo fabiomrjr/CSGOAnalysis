@@ -28,11 +28,11 @@ class GameBuilder:
 
         team1 = TeamDAO().getTeamByLikeName(str(team1_name))
         if team1 is None:
-            team1 = TeamDAO().createTeam(team1_name, "", None, None)
+            team1 = TeamDAO().create_team(team1_name, "", None, None)
 
         team2 = TeamDAO().getTeamByLikeName(str(team2_name))
         if team2 is None:
-            team2 = TeamDAO().createTeam(team2_name, "", None, None)
+            team2 = TeamDAO().create_team(team2_name, "", None, None)
 
         game = GameDAO().getGameByTeamsAndDateTime(team1.id_team, team2.id_team, game_datetime)
         # if game != None or len(frames) == 0:
@@ -52,12 +52,65 @@ class GameBuilder:
                 team1_score = 0
                 team2_score = 1
 
+        map_left, team1_pick, team1_removes, team2_pick, team2_removes = self.fill_maps_picks_removes(
+            picks_remove_info_array, team1_name, team2_name)
+
+        championship = ChampionshipDAO().getChampionshipByNameAndStartDate(championship_name, None)
+        if championship is None:
+            championship = ChampionshipDAO().createChampionship(championship_name, None, None, None)
+
+        if len(maps_ct_tr_info_array) < (4 + (best_of - 1) * 26):
+            return
+
+        game = self.create_or_update_game(best_of, championship, game, game_datetime, map_left, team1, team1_pick,
+                                          team1_rank, team1_removes, team1_score, team2, team2_pick, team2_rank,
+                                          team2_removes, team2_score)
+
+        maps_array = self.create_map(game, maps_ct_tr_info_array, rounds_detail_informations, best_of)
+        self.createPlayerMapStats(maps_array, team1, team2, frames)
+
+    def create_or_update_game(self, best_of, championship, game, game_datetime, map_left, team1, team1_pick, team1_rank,
+                              team1_removes, team1_score, team2, team2_pick, team2_rank, team2_removes, team2_score):
+        if game is None:
+            if team1_score > team2_score:
+                game = GameDAO().createGame(championship.id_championship, team1.id_team, team2.id_team, game_datetime,
+                                            team1_score, team2_score, team1.id_team, best_of,
+                                            team1_pick, team2_pick, team1_removes, team2_removes, map_left, team1_rank,
+                                            team2_rank)
+            elif team1_score < team2_score:
+                game = GameDAO().createGame(championship.id_championship, team1.id_team, team2.id_team, game_datetime,
+                                            team1_score, team2_score, team2.id_team, best_of,
+                                            team1_pick, team2_pick, team1_removes, team2_removes, map_left, team1_rank,
+                                            team2_rank)
+            else:
+                game = GameDAO().createGame(championship.id_championship, team1.id_team, team2.id_team, game_datetime,
+                                            team1_score, team2_score, None, best_of,
+                                            team1_pick, team2_pick, team1_removes, team2_removes, map_left, team1_rank,
+                                            team2_rank)
+        else:
+            if team1_score > team2_score:
+                GameDAO().updateGame(game, championship.id_championship, team1.id_team, team2.id_team, game_datetime,
+                                     team1_score, team2_score, team1.id_team, best_of,
+                                     team1_pick, team2_pick, team1_removes, team2_removes, map_left, team1_rank,
+                                     team2_rank)
+            elif team1_score < team2_score:
+                GameDAO().updateGame(game, championship.id_championship, team1.id_team, team2.id_team, game_datetime,
+                                     team1_score, team2_score, team2.id_team, best_of,
+                                     team1_pick, team2_pick, team1_removes, team2_removes, map_left, team1_rank,
+                                     team2_rank)
+            else:
+                GameDAO().updateGame(game, championship.id_championship, team1.id_team, team2.id_team, game_datetime,
+                                     team1_score, team2_score, None, best_of,
+                                     team1_pick, team2_pick, team1_removes, team2_removes, map_left, team1_rank,
+                                     team2_rank)
+        return game
+
+    def fill_maps_picks_removes(self, picks_remove_info_array, team1_name, team2_name):
         team1_pick = ""
         team1_removes = ""
         team2_pick = ""
         team2_removes = ""
         map_left = ""
-
         count = 0
         for pick in picks_remove_info_array:
             if count <= 2:
@@ -87,47 +140,7 @@ class GameBuilder:
         team1_removes = team1_removes[:-1] if len(team1_removes) > 0 else team1_removes
         team2_pick = team2_pick[:-1] if len(team2_pick) > 0 else team2_pick
         team2_removes = team2_removes[:-1] if len(team2_removes) > 0 else team2_removes
-
-        championship = ChampionshipDAO().getChampionshipByNameAndStartDate(championship_name, None)
-        if championship is None:
-            championship = ChampionshipDAO().createChampionship(championship_name, None, None, None)
-
-        if len(maps_ct_tr_info_array) < (4 + (best_of - 1) * 26):
-            return
-
-        # game = GameDAO().getGameByTeamsAndDateTime(team1.id_team, team2.id_team, game_datetime)
-        if game is None:
-            if team1_score > team2_score:
-                game = GameDAO().createGame(championship.id_championship, team1.id_team, team2.id_team, game_datetime,
-                                            team1_score, team2_score, team1.id_team, best_of,
-                                            team1_pick, team2_pick, team1_removes, team2_removes, map_left, team1_rank,
-                                            team2_rank)
-            elif team1_score < team2_score:
-                game = GameDAO().createGame(championship.id_championship, team1.id_team, team2.id_team, game_datetime,
-                                            team1_score, team2_score, team2.id_team, best_of,
-                                            team1_pick, team2_pick, team1_removes, team2_removes, map_left, team1_rank,
-                                            team2_rank)
-            else:
-                game = GameDAO().createGame(championship.id_championship, team1.id_team, team2.id_team, game_datetime,
-                                            team1_score, team2_score, None, best_of,
-                                            team1_pick, team2_pick, team1_removes, team2_removes, map_left, team1_rank,
-                                            team2_rank)
-        else:
-            if team1_score > team2_score:
-                GameDAO().updateGame(game, championship.id_championship, team1.id_team, team2.id_team, game_datetime,
-                                     team1_score, team2_score, team1.id_team, best_of,
-                                     team1_pick, team2_pick, team1_removes, team2_removes, map_left, team1_rank, team2_rank)
-            elif team1_score < team2_score:
-                GameDAO().updateGame(game, championship.id_championship, team1.id_team, team2.id_team, game_datetime,
-                                     team1_score, team2_score, team2.id_team, best_of,
-                                     team1_pick, team2_pick, team1_removes, team2_removes, map_left, team1_rank, team2_rank)
-            else:
-                GameDAO().updateGame(game, championship.id_championship, team1.id_team, team2.id_team, game_datetime,
-                                     team1_score, team2_score, None, best_of,
-                                     team1_pick, team2_pick, team1_removes, team2_removes, map_left, team1_rank, team2_rank)
-
-        maps_array = self.create_map(game, maps_ct_tr_info_array, rounds_detail_informations, best_of)
-        self.createPlayerMapStats(maps_array, team1, team2, frames)
+        return map_left, team1_pick, team1_removes, team2_pick, team2_removes
 
     def create_map(self, game, maps_ct_tr_info_array, rounds_detail_informations, best_of):
         map_list = []

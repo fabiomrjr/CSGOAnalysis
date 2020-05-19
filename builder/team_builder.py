@@ -53,11 +53,17 @@ class TeamBuilder():
         self.provideDefaultTeam("Heroic", "https://www.hltv.org/team/7175/heroic#tab-matchesBox", 30, 7175)
         self.provideDefaultTeam("Apeks", "https://www.hltv.org/team/9806/apeks#tab-matchesBox", 51, 9806)
         self.provideDefaultTeam("Movistar Riders", "https://www.hltv.org/team/7718/movistar-riders#tab-matchesBox", 32, 7718)
+        self.provideDefaultTeam("Winstrike", "https://www.hltv.org/team/9183/winstrike#tab-matchesBox", 24, 9183)
+        self.provideDefaultTeam("FATE", "https://www.hltv.org/team/9863/fate#tab-matchesBox", 57, 9863)
+        self.provideDefaultTeam("Endpoint", "https://www.hltv.org/team/7234/endpoint#tab-matchesBox", 33, 7234)
+        self.provideDefaultTeam("sAw", "https://www.hltv.org/team/10567/saw#tab-matchesBox", 77, 10567)
+        self.provideDefaultTeam("PACT", "https://www.hltv.org/team/8248/pact#tab-matchesBox", 55, 8248)
+        self.provideDefaultTeam("Salamander", "https://www.hltv.org/team/9939/salamander#tab-matchesBox", 49, 9939)
 
 
     def provideDefaultTeam(self, name, homepage, rank, hltv_id):
         team = TeamDAO().getTeamByLikeName(name)
         if team == None:
-            TeamDAO().createTeam(name, homepage, rank, hltv_id)
+            TeamDAO().create_team(name, homepage, rank, hltv_id)
         else:
             TeamDAO().updateTeam(team, name, homepage, rank, hltv_id)
