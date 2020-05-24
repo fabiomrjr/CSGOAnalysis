@@ -110,7 +110,7 @@ class GameBuilder:
         team1_removes = ""
         team2_pick = ""
         team2_removes = ""
-        map_left = ""
+        map_left = None
         count = 0
         for pick in picks_remove_info_array:
             if count <= 2:
@@ -134,7 +134,8 @@ class GameBuilder:
                         team2_removes = team2_removes + splitted[1] + ";"
                 else:
                     splitted = pick.split(" ")
-                    map_left = splitted[0]
+                    if splitted[0] != "]":
+                        map_left = splitted[0]
                 count = count + 1
         team1_pick = team1_pick[:-1] if len(team1_pick) > 0 else team1_pick
         team1_removes = team1_removes[:-1] if len(team1_removes) > 0 else team1_removes

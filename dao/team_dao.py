@@ -46,7 +46,7 @@ class TeamDAO(DAO):
 
     def listTeamsWithHomePage(self):
         try:
-            item = self.session.query(Team).filter(and_(Team.homepage.isnot(None), Team.homepage != "", Team.id_team >= 28)).all()
+            item = self.session.query(Team).filter(and_(Team.homepage.isnot(None), Team.homepage != "")).all()
         except:
             self.session.rollback()
             raise
