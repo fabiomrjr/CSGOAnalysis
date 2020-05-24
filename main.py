@@ -16,10 +16,13 @@ def funcao1():
     # df, df2 = TeamIndicators().win_rank_matrix()
     # print(df)
     # BuildDataSet().get_data_set()
-    classifier = BuildDataSet().decision_tree_machine_learning()
-    df = BuildDataSet().get_predict_game_data_set("Furia", "Mibr", ["Vertigo", "Train"])
-    y = BuildDataSet().predict_result(classifier, df)
-    print(y)
+    #decision_tree_classifier = BuildDataSet().decision_tree_machine_learning()
+    #randon_forest_tree_classifier = BuildDataSet().randon_forest_machine_learning()
+    #knn_tree_classifier = BuildDataSet().knn_machine_learning()
+    ann_tree_classifier = BuildDataSet().ann_machine_learning()
+    # df = BuildDataSet().get_predict_game_data_set("Furia", "Mibr", ["Vertigo", "Train"])
+    # y = BuildDataSet().predict_result(decision_tree_classifier, df)
+    # print(y)
 
     # BuildGame().check("https://www.hltv.org/matches/2340651/natus-vincere-vs-fnatic-esl-pro-league-season-11-europe")
 
@@ -40,5 +43,5 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    #funcao1()
-    main(sys.argv[1:])
+    funcao1()
+    # main(sys.argv[1:])
