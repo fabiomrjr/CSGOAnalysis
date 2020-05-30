@@ -358,3 +358,21 @@ class TeamIndicators:
                 df1.loc[team1_rank_key, team2_rank_key] = df1.loc[team1_rank_key, team2_rank_key] + 1
             df2.loc[team1_rank_key, team2_rank_key] = df2.loc[team1_rank_key, team2_rank_key] + 1
 
+
+def get_team_win_lose_rank_average(team_last_10_games, id_team1):
+    counter = 0
+    win_counter = 0
+    lose_counter = 0
+    for game_item in team_last_10_games:
+        if game_item.id_team1 == id_team1:
+            if game_item.team1_score > game_item.team2_score:
+                win_counter = win_counter + game_item.team2_rank
+            else:
+                lose_counter = lose_counter + game_item.team2_rank
+        else:
+            if game_item.team2_score > game_item.team1_score:
+                win_counter = win_counter + game_item.team1_rank
+            else:
+                lose_counter = lose_counter + game_item.team1_rank
+        counter = counter + 1
+    return win_counter/counter, lose_counter/counter

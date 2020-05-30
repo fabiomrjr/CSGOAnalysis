@@ -8,6 +8,7 @@ from datetime import datetime as dt
 from builder.team_builder import TeamBuilder
 from analyser.team_indicators import TeamIndicators
 from analyser.build_data_sets import BuildDataSet
+from analyser.build_simplified_data_sets import BuildSimplifiedDataSet
 
 
 def funcao1():
@@ -19,7 +20,14 @@ def funcao1():
     #decision_tree_classifier = BuildDataSet().decision_tree_machine_learning()
     #randon_forest_tree_classifier = BuildDataSet().randon_forest_machine_learning()
     #knn_tree_classifier = BuildDataSet().knn_machine_learning()
-    ann_tree_classifier = BuildDataSet().ann_machine_learning()
+    #ann_tree_classifier = BuildDataSet().ann_machine_learning()
+
+    #BuildSimplifiedDataSet().get_data_set()
+    #decision_tree_classifier = BuildSimplifiedDataSet().decision_tree_machine_learning()
+    #randon_forest_tree_classifier = BuildSimplifiedDataSet().randon_forest_machine_learning()
+    #knn_tree_classifier = BuildSimplifiedDataSet().knn_machine_learning()
+    ann_tree_classifier = BuildSimplifiedDataSet().ann_machine_learning()
+
     # df = BuildDataSet().get_predict_game_data_set("Furia", "Mibr", ["Vertigo", "Train"])
     # y = BuildDataSet().predict_result(decision_tree_classifier, df)
     # print(y)
@@ -36,12 +44,13 @@ def main(argv):
         team1 = argv[1] if "-" not in argv[1] else argv[1].replace("-", " ")
         BuildTeam().full_update_by_team(team1, int(argv[2]))
     elif argv[0] == "fullUpdateTeams":
-        TeamBuilder().createDefaultTeams()
         BuildTeam().full_update_all_teams(int(argv[1]))
     elif argv[0] == "updateTeamsMatches":
         BuildTeam().update_matches_all_teams(int(argv[1]))
+    elif argv[0] == "createDefaultTeams":
+        TeamBuilder().createDefaultTeams()
 
 
 if __name__ == "__main__":
-    funcao1()
-    # main(sys.argv[1:])
+    # funcao1()
+    main(sys.argv[1:])
